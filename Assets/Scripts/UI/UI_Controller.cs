@@ -18,7 +18,7 @@ public class UI_Controller : MonoBehaviour
     public void NewGame_5x6() => OnNewGame.Invoke(5, 6);
 
     public void Back() => GameEvents.GameOver.Invoke();
-    // public void ContinueLastGame() => OnContinue.Invoke();
+     public void ContinueLastGame() => OnContinue.Invoke();
 
 
 

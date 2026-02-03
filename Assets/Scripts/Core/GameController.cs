@@ -14,14 +14,14 @@ public class GameController : MonoBehaviour
     {
         GameEvents.RequestCardFlip += HandleCardFlipRequest;
         //  boardController.OnGameOver += SaveGame;
-        GameEvents.GameOver += SaveGame;
+       // GameEvents.GameOver += SaveGame;
     }
 
     private void OnDisable()
     {
         GameEvents.RequestCardFlip -= HandleCardFlipRequest;
         // boardController.OnGameOver -= SaveGame;
-        GameEvents.GameOver -= SaveGame;
+      //  GameEvents.GameOver -= SaveGame;
     }
 
     private void HandleCardFlipRequest(CardView card)
@@ -55,8 +55,8 @@ public class GameController : MonoBehaviour
         CardView second = revealedCards[1];
 
         Debug.Log($"Resolving match between Card {first.Definition.pairId} and Card {second.Definition.pairId}.");
-        first.SetState(CardState.Resolving);
-        second.SetState(CardState.Resolving);
+        first.SetState(CardState.Revealed);
+        second.SetState(CardState.Revealed);
 
         bool isMatch = first.Definition.pairId == second.Definition.pairId;
 
@@ -64,8 +64,8 @@ public class GameController : MonoBehaviour
         {
             first.SetState(CardState.Matched);
             second.SetState(CardState.Matched);
-            first.HideCard();
-            second.HideCard();
+            //  first.HideCard();
+            //  second.HideCard();
 
             GameEvents.MatchResolved?.Invoke(true);
             GameEvents.GameOverCheck.Invoke();
@@ -73,8 +73,8 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            first.SetState(CardState.Hidden);
-            second.SetState(CardState.Hidden);
+            first.SetState(CardState.BackToHidden);
+            second.SetState(CardState.BackToHidden);
 
             GameEvents.MatchResolved?.Invoke(false);
             Debug.Log(" Not Matched");
@@ -90,7 +90,7 @@ public class GameController : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        SaveGame();
+      //  SaveGame();
     }
     public void SaveGame()
     {
@@ -140,6 +140,7 @@ public class GameController : MonoBehaviour
         if (!SaveService.TryLoad(out SaveData saveData))
         {
             Debug.Log("LoadGame");
+            GameEvents.HideMenu?.Invoke();
             LoadGame();
             return;
         }
@@ -153,8 +154,8 @@ public class GameController : MonoBehaviour
             return;
         }
         Debug.Log("resumeGame");
-        GameEvents.HideMenu?.Invoke();
         LoadGame();
+        GameEvents.HideMenu?.Invoke();
 
     }
 

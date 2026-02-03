@@ -16,7 +16,7 @@ public class BoardController : MonoBehaviour
     [SerializeField] private List<CardDefinition> cardDefinitions;
 
     private readonly List<CardView> spawnedCards = new();
-    public event System.Action OnGameOver;
+    //  public event System.Action OnGameOver;
     SaveData saveData;
     bool isMatchFineshed;
 
@@ -116,9 +116,9 @@ public class BoardController : MonoBehaviour
             }
         }
 
-
         isMatchFineshed = true;
 
+        SaveService.Delete();
         Debug.Log("[Board] Game Over – all cards matched");
         GameEvents.GameOver?.Invoke();
     }

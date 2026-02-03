@@ -16,4 +16,5 @@ public class CardSaveEntry
     public int cardId;
     public int siblingIndex;
     public CardState state;
+    public bool isFlipped;
 }
