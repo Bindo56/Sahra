@@ -6,6 +6,7 @@ public class SaveData
     public int score;
     public int rows;
     public int columns;
+    public bool MatchFinished;
     public List<CardSaveEntry> cards = new();
 }
 

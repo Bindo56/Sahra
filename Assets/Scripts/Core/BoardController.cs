@@ -16,6 +16,23 @@ public class BoardController : MonoBehaviour
     [SerializeField] private List<CardDefinition> cardDefinitions;
 
     private readonly List<CardView> spawnedCards = new();
+    public event System.Action OnGameOver;
+    SaveData saveData;
+    bool isMatchFineshed;
+
+    private void OnEnable()
+    {
+        GameEvents.GameOverCheck += CheckForGameOver;
+        if (SaveService.TryLoad(out SaveData saveDataout))
+        {
+            saveData = saveDataout;
+        }
+    }
+    private void OnDisable()
+    {
+
+        GameEvents.GameOverCheck -= CheckForGameOver;
+    }
 
     private void Awake()
     {
@@ -25,9 +42,10 @@ public class BoardController : MonoBehaviour
 
     private void Start()
     {
+
         ApplyAspectAwareLayout();
         ConfigureGridLayout();
-       // CreateBoard();
+        // CreateBoard();
     }
 
     // -------------------- GRID SETUP --------------------
@@ -87,6 +105,24 @@ public class BoardController : MonoBehaviour
         }
     }
 
+    private void CheckForGameOver()
+    {
+        for (int i = 0; i < spawnedCards.Count; i++)
+        {
+            if (spawnedCards[i].GetState() != CardState.Matched)
+            {
+
+                return;
+            }
+        }
+
+
+        isMatchFineshed = true;
+
+        Debug.Log("[Board] Game Over – all cards matched");
+        GameEvents.GameOver?.Invoke();
+    }
+
     // -------------------- SAVE / LOAD --------------------
 
     public void Setup(int newRows, int newColumns)
@@ -104,7 +140,9 @@ public class BoardController : MonoBehaviour
         {
             score = score,
             rows = rows,
-            columns = columns
+            columns = columns,
+            MatchFinished = isMatchFineshed
+
         };
 
         foreach (CardView card in spawnedCards)
@@ -122,10 +160,12 @@ public class BoardController : MonoBehaviour
 
     public void RestoreFromSave(SaveData data)
     {
+
         ClearBoard();
 
         rows = data.rows;
         columns = data.columns;
+
 
         ConfigureGridLayout();
 
@@ -201,7 +241,7 @@ public class BoardController : MonoBehaviour
     {
         foreach (Transform child in boardContainer)
             Destroy(child.gameObject);
-
+        isMatchFineshed = false;
         spawnedCards.Clear();
     }
 

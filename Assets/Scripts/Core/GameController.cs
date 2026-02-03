@@ -13,11 +13,15 @@ public class GameController : MonoBehaviour
     private void OnEnable()
     {
         GameEvents.RequestCardFlip += HandleCardFlipRequest;
+        //  boardController.OnGameOver += SaveGame;
+        GameEvents.GameOver += SaveGame;
     }
 
     private void OnDisable()
     {
         GameEvents.RequestCardFlip -= HandleCardFlipRequest;
+        // boardController.OnGameOver -= SaveGame;
+        GameEvents.GameOver -= SaveGame;
     }
 
     private void HandleCardFlipRequest(CardView card)
@@ -64,6 +68,7 @@ public class GameController : MonoBehaviour
             second.HideCard();
 
             GameEvents.MatchResolved?.Invoke(true);
+            GameEvents.GameOverCheck.Invoke();
             Debug.Log("Matched");
         }
         else
@@ -80,17 +85,7 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
-        /* if (SaveService.HasSave())
-         {
-             ContinueGame();
-         }
-         else
-        {
-            NewGame(
-                boardController.GetRow(),
-                boardController.GetColumn()
-            );
-        }*/
+
     }
 
     private void OnApplicationQuit()
@@ -142,10 +137,30 @@ public class GameController : MonoBehaviour
 
     public void ContinueGame()
     {
-        if (SaveService.HasSave())
+        if (!SaveService.TryLoad(out SaveData saveData))
         {
+            Debug.Log("LoadGame");
             LoadGame();
-            //ContinueGame();
+            return;
         }
+
+        Debug.Log(saveData.MatchFinished + "Get status");
+        if (saveData.MatchFinished)
+        {
+
+            Debug.Log("overGame");
+            GameEvents.GameOver?.Invoke();
+            return;
+        }
+        Debug.Log("resumeGame");
+        GameEvents.HideMenu?.Invoke();
+        LoadGame();
+
+    }
+
+    public void BackToMenu()
+    {
+        SaveGame();
+        GameEvents.ShowMenu?.Invoke();
     }
 }

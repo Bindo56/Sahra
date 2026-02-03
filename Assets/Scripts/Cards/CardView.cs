@@ -19,7 +19,7 @@ public class CardView : MonoBehaviour, IPointerDownHandler
     }
     public void Initialize(CardDefinition definition)
     {
-        Debug.Log($"Card initialized with pairId: {definition.pairId}");
+       // Debug.Log($"Card initialized with pairId: {definition.pairId}");
         Definition = definition;
         frontImage.sprite = Definition.frontSprite;
         State = CardState.Hidden;
